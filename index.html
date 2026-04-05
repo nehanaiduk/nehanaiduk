@@ -210,17 +210,68 @@ body {
   object-position: top center;
   filter: grayscale(20%) contrast(1.05);
   opacity: 0;
-  animation: up 1.2s ease forwards 0.6s;
+  animation: photoIn 1.2s ease forwards 0.6s;
   display: block;
 }
-/* dark gradient overlay so text stays readable */
+.hero-photo-wrap img.loaded { display: block; }
+.hero-photo-wrap img.errored { display: none; }
+
+@keyframes photoIn {
+  from { opacity: 0; transform: scale(1.04); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* dark overlay so text stays readable over photo */
 .hero-photo-wrap::after {
   content: '';
   position: absolute; inset: 0;
   background:
-    linear-gradient(to right,  var(--ink) 0%, rgba(17,16,16,0.55) 40%, transparent 100%),
-    linear-gradient(to top, var(--ink) 0%, transparent 40%);
+    linear-gradient(to right,  var(--ink) 0%, rgba(17,16,16,0.45) 38%, transparent 100%),
+    linear-gradient(to top, var(--ink) 0%, transparent 45%);
+  z-index: 1;
 }
+
+/* monogram shown when photo fails */
+.hero-monogram {
+  position: absolute; inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.hero-monogram.show { display: flex; }
+.monogram-circle {
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  border: 1px solid rgba(185,143,105,0.25);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.monogram-circle::before {
+  content: '';
+  position: absolute; inset: 8px;
+  border-radius: 50%;
+  border: 1px dashed rgba(185,143,105,0.12);
+}
+.monogram-letters {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 400;
+  color: rgba(245,240,232,0.2);
+  letter-spacing: 0.06em;
+  font-style: italic;
+}
+.monogram-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  color: rgba(245,240,232,0.18);
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.8;
+}
+
 /* editorial label over photo */
 .hero-photo-label {
   position: absolute;
@@ -228,7 +279,7 @@ body {
   font-family: 'Space Mono', monospace;
   font-size: 0.58rem;
   letter-spacing: 0.22em;
-  color: rgba(245,240,232,0.3);
+  color: rgba(245,240,232,0.25);
   text-transform: uppercase;
   z-index: 2;
   writing-mode: vertical-rl;
@@ -345,7 +396,6 @@ body {
 #about {
   display: grid;
   grid-template-columns: 300px 1fr;
-  min-height: 70vh;
 }
 .about-sidebar {
   background: var(--wine-pale);
@@ -973,7 +1023,13 @@ footer span {
     </div>
     <div class="hero-right">
       <div class="hero-photo-wrap">
-        <img src="https://i.imgur.com/0ZKiAsK.jpg" alt="Neha Naidu Kunche" id="hero-photo">
+        <img src="https://i.ibb.co/3yW55Z5w/IMG-20260404-WA0011.jpg" alt="Neha Naidu Kunche" id="hero-photo">
+        <div class="hero-monogram" id="hero-monogram">
+          <div class="monogram-circle">
+            <span class="monogram-letters">NNK</span>
+          </div>
+          <div class="monogram-name">Neha Naidu Kunche<br>Technology Risk Analyst</div>
+        </div>
         <div class="hero-photo-label">Neha Naidu Kunche · 2025</div>
       </div>
       <p class="hero-intro">
@@ -1297,8 +1353,17 @@ footer span {
 
 <script>
 /* ── PHOTO: swap demo → real when you have the imgur link ──
-   document.getElementById('hero-photo').src = 'YOUR_IMGUR_URL_HERE';
+   document.getElementById('hero-photo').src = 'YOUR_DIRECT_IMAGE_URL_HERE';
 ── */
+const heroPhoto = document.getElementById('hero-photo');
+const heroMonogram = document.getElementById('hero-monogram');
+heroPhoto.addEventListener('error', () => {
+  heroPhoto.classList.add('errored');
+  heroMonogram.classList.add('show');
+});
+heroPhoto.addEventListener('load', () => {
+  heroPhoto.classList.add('loaded');
+});
 
 /* ── CURSOR ── */
 const dot = document.getElementById('cur-dot');
@@ -1499,3 +1564,4 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
 </script>
 </body>
 </html>
+
